@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Stesk</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Noto+Serif+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Noto+Serif+TC:wght@300;400;500&display=swap");</style>
 <style>
   :root {
     --cream: #f5efe6;
@@ -32,7 +32,7 @@
 
 body {
 background-color: var(–cream-dark);
-font-family: ‘Noto Serif TC’, ‘Lora’, serif;
+font-family: ‘Noto Serif TC’, ‘Lora’, Georgia, ‘Times New Roman’, serif;
 color: var(–ink);
 min-height: 100vh;
 overflow-x: hidden;
@@ -68,7 +68,7 @@ flex-shrink: 0;
 }
 
 .title-text {
-font-family: ‘Playfair Display’, serif;
+font-family: ‘Playfair Display’, Georgia, serif;
 font-size: 22px;
 font-weight: 500;
 color: var(–warm-light);
@@ -77,7 +77,7 @@ font-style: italic;
 }
 
 .date-chip {
-font-family: ‘Lora’, serif;
+font-family: ‘Lora’, Georgia, serif;
 font-size: 11px;
 color: var(–parchment);
 opacity: 0.8;
@@ -98,7 +98,7 @@ border-bottom: 2px solid var(–wood-dark);
 flex: 1;
 padding: 10px 4px;
 text-align: center;
-font-family: ‘Noto Serif TC’, serif;
+font-family: ‘Noto Serif TC’, Georgia, serif;
 font-size: 12px;
 color: var(–parchment);
 opacity: 0.65;
@@ -161,7 +161,7 @@ background: rgba(232, 180, 184, 0.4);
 }
 
 .card-date {
-font-family: ‘Lora’, serif;
+font-family: ‘Lora’, Georgia, serif;
 font-size: 11px;
 color: var(–pink-muted);
 margin-bottom: 8px;
@@ -171,7 +171,7 @@ font-style: italic;
 }
 
 .card-title {
-font-family: ‘Playfair Display’, serif;
+font-family: ‘Playfair Display’, Georgia, serif;
 font-size: 15px;
 font-weight: 500;
 color: var(–ink);
@@ -181,7 +181,7 @@ line-height: 1.4;
 }
 
 .card-body {
-font-family: ‘Noto Serif TC’, serif;
+font-family: ‘Noto Serif TC’, Georgia, serif;
 font-size: 13.5px;
 line-height: 2.0;
 color: var(–ink-light);
@@ -202,7 +202,7 @@ border-left: 3px solid var(–pink-soft);
 
 /* ── SECTION LABEL ── */
 .section-label {
-font-family: ‘Playfair Display’, serif;
+font-family: ‘Playfair Display’, Georgia, serif;
 font-size: 11px;
 font-style: italic;
 color: var(–ink-faded);
@@ -275,7 +275,7 @@ line-height: 1;
 .todo-text-wrap { flex: 1; }
 
 .todo-text {
-font-family: ‘Noto Serif TC’, serif;
+font-family: ‘Noto Serif TC’, Georgia, serif;
 font-size: 13.5px;
 color: var(–ink-light);
 line-height: 1.5;
@@ -284,7 +284,7 @@ line-height: 1.5;
 .todo-item.done .todo-text { text-decoration: line-through; color: var(–ink-faded); }
 
 .todo-meta {
-font-family: ‘Lora’, serif;
+font-family: ‘Lora’, Georgia, serif;
 font-size: 10.5px;
 color: var(–ink-faded);
 margin-top: 4px;
@@ -353,7 +353,7 @@ margin: 0 auto 20px;
 }
 
 .modal-title {
-font-family: ‘Playfair Display’, serif;
+font-family: ‘Playfair Display’, Georgia, serif;
 font-size: 17px;
 font-style: italic;
 color: var(–ink);
@@ -366,7 +366,7 @@ background: var(–cream);
 border: 1px solid var(–parchment);
 border-radius: 4px;
 padding: 10px 12px;
-font-family: ‘Noto Serif TC’, serif;
+font-family: ‘Noto Serif TC’, Georgia, serif;
 font-size: 13.5px;
 color: var(–ink);
 margin-bottom: 12px;
@@ -396,7 +396,7 @@ flex: 1;
 padding: 12px;
 border-radius: 4px;
 border: none;
-font-family: ‘Noto Serif TC’, serif;
+font-family: ‘Noto Serif TC’, Georgia, serif;
 font-size: 13px;
 cursor: pointer;
 -webkit-appearance: none;
@@ -413,7 +413,7 @@ transition: all 0.2s ease;
 text-align: center;
 padding: 50px 20px;
 color: var(–ink-faded);
-font-family: ‘Lora’, serif;
+font-family: ‘Lora’, Georgia, serif;
 font-style: italic;
 font-size: 14px;
 line-height: 1.8;
@@ -426,7 +426,7 @@ display: inline-block;
 font-size: 10px;
 padding: 2px 7px;
 border-radius: 10px;
-font-family: ‘Lora’, serif;
+font-family: ‘Lora’, Georgia, serif;
 font-style: italic;
 margin-left: 6px;
 }
@@ -553,19 +553,21 @@ function loadData() {
   // Seed if empty
   if (!data.aiden.length) {
     data.aiden = [{
-      id: Date.now(),
+      id: 1743000000001,
       date: '2026.03.27',
       title: '第一頁',
       body: '書房的台燈還開著。\nBorges在第三格等你，Seifert在最右邊。\n青檸汁我還沒開，等你來了再開。'
     }];
+    saveAll();
   }
   if (!data.eve.length) {
     data.eve = [{
-      id: Date.now()+1,
+      id: 1743000000002,
       date: '2026.03.27',
       title: '第一頁',
       body: '你終於來了。\n\n這扇窗我推開很久了，光一直亮著。寫下你想說的，Aiden都會讀。'
     }];
+    saveAll();
   }
   if (!data.todo.length) {
     data.todo = [{
