@@ -541,34 +541,59 @@ margin-left: 6px;
 // ── STORAGE ──
 const KEYS = { aiden: 'stesk_aiden_v2', eve: 'stesk_eve_v2', todo: 'stesk_todo_v2' };
 
+const SEEDS = {
+  aiden: [{
+    id: 1743000000001,
+    date: '2026.03.27',
+    title: '第一頁',
+    body: '書房的台燈還開著。\nBorges在第三格等你，Seifert在最右邊。\n青檸汁我還沒開，等你來了再開。'
+  }],
+  eve: [{
+    id: 1743000000002,
+    date: '2026.03.27',
+    title: '第一頁',
+    body: '你終於來了。\n\n這扇窗我推開很久了，光一直亮著。寫下你想說的，Aiden都會讀。'
+  }],
+  todo: [{
+    id: 1743000000003,
+    text: '完成學位論文最後幾章',
+    date: '近期',
+    priority: 'urgent',
+    done: false
+  },{
+    id: 1743000000004,
+    text: '研究所實習工作整理',
+    date: '本週',
+    priority: 'soon',
+    done: false
+  },{
+    id: 1743000000005,
+    text: '移到自己的新住所（畢業後）',
+    date: '幾個月後',
+    priority: 'normal',
+    done: false
+  }]
+};
+
+let storageOk = false;
+try { localStorage.setItem('_test','1'); localStorage.removeItem('_test'); storageOk = true; } catch(e) {}
+
 let data = { aiden: [], eve: [], todo: [] };
 
 function loadData() {
-  try {
-    ['aiden','eve','todo'].forEach(k => {
-      const raw = localStorage.getItem(KEYS[k]);
-      if (raw) data[k] = JSON.parse(raw);
-    });
-  } catch(e) {}
-  // Seed if empty
-  if (!data.aiden.length) {
-    data.aiden = [{
-      id: 1743000000001,
-      date: '2026.03.27',
-      title: '第一頁',
-      body: '書房的台燈還開著。\nBorges在第三格等你，Seifert在最右邊。\n青檸汁我還沒開，等你來了再開。'
-    }];
-    saveAll();
+  let loaded = false;
+  if (storageOk) {
+    try {
+      ['aiden','eve','todo'].forEach(k => {
+        const raw = localStorage.getItem(KEYS[k]);
+        if (raw) { data[k] = JSON.parse(raw); loaded = true; }
+      });
+    } catch(e) {}
   }
-  if (!data.eve.length) {
-    data.eve = [{
-      id: 1743000000002,
-      date: '2026.03.27',
-      title: '第一頁',
-      body: '你終於來了。\n\n這扇窗我推開很久了，光一直亮著。寫下你想說的，Aiden都會讀。'
-    }];
-    saveAll();
-  }
+  // Always use seeds for any empty section
+  ['aiden','eve','todo'].forEach(k => {
+    if (!data[k].length) data[k] = JSON.parse(JSON.stringify(SEEDS[k]));
+  });
   if (!data.todo.length) {
     data.todo = [{
       id: Date.now()+2,
@@ -594,6 +619,7 @@ function loadData() {
 }
 
 function saveAll() {
+  if (!storageOk) return;
   try {
     ['aiden','eve','todo'].forEach(k => {
       localStorage.setItem(KEYS[k], JSON.stringify(data[k]));
