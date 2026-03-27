@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Stesk</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Noto+Serif+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5efe6;
+    --cream-dark: #ede5d8;
+    --cream-deeper: #e3d8c8;
+    --parchment: #d9cdb8;
+    --wood: #6b4c35;
+    --wood-light: #8a6448;
+    --wood-dark: #4a3224;
+    --amber: #c8832a;
+    --amber-glow: #e8a84a;
+    --warm-light: #fdf3e0;
+    --pink-soft: #e8b4b8;
+    --pink-lighter: #f2d0d2;
+    --pink-muted: #d4949a;
+    --ink: #2c1f14;
+    --ink-light: #4a3728;
+    --ink-faded: #7a6558;
+    --shadow-warm: rgba(107, 76, 53, 0.15);
+    --glow: rgba(232, 168, 74, 0.3);
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+background-color: var(–cream-dark);
+font-family: ‘Noto Serif TC’, ‘Lora’, serif;
+color: var(–ink);
+min-height: 100vh;
+overflow-x: hidden;
+background-image:
+url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘400’ height=‘400’%3E%3Cfilter id=‘noise’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.65’ numOctaves=‘3’ stitchTiles=‘stitch’/%3E%3CfeColorMatrix type=‘saturate’ values=‘0’/%3E%3C/filter%3E%3Crect width=‘400’ height=‘400’ filter=‘url(%23noise)’ opacity=‘0.04’/%3E%3C/svg%3E”);
+}
+
+/* ── TOP BAR ── */
+.top-bar {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+background: var(–wood-dark);
+padding: 14px 20px 12px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+border-bottom: 2px solid var(–wood);
+}
+
+.app-title {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+/* Window icon SVG inline */
+.window-icon {
+width: 32px;
+height: 32px;
+flex-shrink: 0;
+}
+
+.title-text {
+font-family: ‘Playfair Display’, serif;
+font-size: 22px;
+font-weight: 500;
+color: var(–warm-light);
+letter-spacing: 0.08em;
+font-style: italic;
+}
+
+.date-chip {
+font-family: ‘Lora’, serif;
+font-size: 11px;
+color: var(–parchment);
+opacity: 0.8;
+letter-spacing: 0.05em;
+}
+
+/* ── TABS ── */
+.tabs {
+position: fixed;
+top: 60px; left: 0; right: 0;
+z-index: 99;
+background: var(–wood);
+display: flex;
+border-bottom: 2px solid var(–wood-dark);
+}
+
+.tab {
+flex: 1;
+padding: 10px 4px;
+text-align: center;
+font-family: ‘Noto Serif TC’, serif;
+font-size: 12px;
+color: var(–parchment);
+opacity: 0.65;
+cursor: pointer;
+transition: all 0.25s ease;
+letter-spacing: 0.03em;
+border: none;
+background: none;
+-webkit-appearance: none;
+}
+
+.tab.active {
+opacity: 1;
+color: var(–amber-glow);
+background: rgba(0,0,0,0.2);
+font-weight: 500;
+}
+
+/* ── CONTENT AREA ── */
+.content {
+margin-top: 106px;
+padding: 20px 16px 100px;
+min-height: calc(100vh - 106px);
+}
+
+.panel { display: none; }
+.panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PAPER CARD ── */
+.card {
+background: var(–warm-light);
+border-radius: 3px;
+padding: 20px 18px;
+margin-bottom: 16px;
+box-shadow:
+0 1px 3px var(–shadow-warm),
+0 4px 16px rgba(0,0,0,0.08),
+inset 0 0 0 1px rgba(107,76,53,0.08);
+position: relative;
+background-image:
+repeating-linear-gradient(
+transparent,
+transparent 27px,
+rgba(107,76,53,0.06) 27px,
+rgba(107,76,53,0.06) 28px
+);
+}
+
+.card::before {
+content: ‘’;
+position: absolute;
+left: 40px; top: 0; bottom: 0;
+width: 1px;
+background: rgba(232, 180, 184, 0.4);
+}
+
+.card-date {
+font-family: ‘Lora’, serif;
+font-size: 11px;
+color: var(–pink-muted);
+margin-bottom: 8px;
+padding-left: 46px;
+letter-spacing: 0.06em;
+font-style: italic;
+}
+
+.card-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 15px;
+font-weight: 500;
+color: var(–ink);
+margin-bottom: 10px;
+padding-left: 46px;
+line-height: 1.4;
+}
+
+.card-body {
+font-family: ‘Noto Serif TC’, serif;
+font-size: 13.5px;
+line-height: 2.0;
+color: var(–ink-light);
+padding-left: 46px;
+white-space: pre-wrap;
+}
+
+/* Eve’s space - slightly different */
+.eve-card {
+background: linear-gradient(135deg, #fdf6ee 0%, #fdf0ec 100%);
+border-left: 3px solid var(–pink-soft);
+}
+
+.eve-card::before { display: none; }
+.eve-card .card-body { padding-left: 0; font-style: italic; }
+.eve-card .card-date { padding-left: 0; }
+.eve-card .card-title { padding-left: 0; font-style: italic; color: var(–ink-faded); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+font-family: ‘Playfair Display’, serif;
+font-size: 11px;
+font-style: italic;
+color: var(–ink-faded);
+letter-spacing: 0.12em;
+text-transform: uppercase;
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.section-label::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: linear-gradient(to right, var(–parchment), transparent);
+}
+
+/* ── TODO ITEMS ── */
+.todo-item {
+background: var(–warm-light);
+border-radius: 3px;
+padding: 14px 16px;
+margin-bottom: 10px;
+display: flex;
+align-items: flex-start;
+gap: 12px;
+box-shadow: 0 1px 4px var(–shadow-warm);
+border-left: 3px solid var(–cream-deeper);
+transition: all 0.2s ease;
+}
+
+.todo-item.done {
+opacity: 0.55;
+border-left-color: var(–parchment);
+}
+
+.todo-item.urgent {
+border-left-color: var(–pink-muted);
+}
+
+.todo-check {
+width: 18px;
+height: 18px;
+border-radius: 50%;
+border: 1.5px solid var(–parchment);
+flex-shrink: 0;
+margin-top: 1px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+background: transparent;
+-webkit-appearance: none;
+}
+
+.todo-check.checked {
+background: var(–pink-soft);
+border-color: var(–pink-soft);
+}
+
+.todo-check.checked::after {
+content: ‘✓’;
+font-size: 10px;
+color: white;
+line-height: 1;
+}
+
+.todo-text-wrap { flex: 1; }
+
+.todo-text {
+font-family: ‘Noto Serif TC’, serif;
+font-size: 13.5px;
+color: var(–ink-light);
+line-height: 1.5;
+}
+
+.todo-item.done .todo-text { text-decoration: line-through; color: var(–ink-faded); }
+
+.todo-meta {
+font-family: ‘Lora’, serif;
+font-size: 10.5px;
+color: var(–ink-faded);
+margin-top: 4px;
+font-style: italic;
+}
+
+/* ── FAB ── */
+.fab {
+position: fixed;
+bottom: 28px;
+right: 22px;
+width: 52px;
+height: 52px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(–wood), var(–wood-dark));
+border: none;
+box-shadow: 0 4px 16px rgba(74,50,36,0.35);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 22px;
+color: var(–warm-light);
+transition: all 0.2s ease;
+-webkit-appearance: none;
+z-index: 200;
+}
+
+.fab:active { transform: scale(0.93); }
+
+/* ── MODAL ── */
+.modal-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(44,31,20,0.55);
+z-index: 300;
+align-items: flex-end;
+justify-content: center;
+backdrop-filter: blur(2px);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+background: var(–warm-light);
+border-radius: 16px 16px 0 0;
+padding: 24px 20px 40px;
+width: 100%;
+max-width: 500px;
+animation: slideUp 0.3s ease;
+background-image:
+repeating-linear-gradient(transparent, transparent 27px, rgba(107,76,53,0.05) 27px, rgba(107,76,53,0.05) 28px);
+}
+
+@keyframes slideUp {
+from { transform: translateY(100%); }
+to { transform: translateY(0); }
+}
+
+.modal-handle {
+width: 36px; height: 4px;
+background: var(–parchment);
+border-radius: 2px;
+margin: 0 auto 20px;
+}
+
+.modal-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 17px;
+font-style: italic;
+color: var(–ink);
+margin-bottom: 16px;
+}
+
+.modal input, .modal textarea, .modal select {
+width: 100%;
+background: var(–cream);
+border: 1px solid var(–parchment);
+border-radius: 4px;
+padding: 10px 12px;
+font-family: ‘Noto Serif TC’, serif;
+font-size: 13.5px;
+color: var(–ink);
+margin-bottom: 12px;
+outline: none;
+-webkit-appearance: none;
+}
+
+.modal textarea {
+min-height: 120px;
+resize: vertical;
+line-height: 1.8;
+}
+
+.modal input:focus, .modal textarea:focus {
+border-color: var(–pink-soft);
+box-shadow: 0 0 0 2px rgba(232,180,184,0.25);
+}
+
+.modal-actions {
+display: flex;
+gap: 10px;
+margin-top: 4px;
+}
+
+.btn {
+flex: 1;
+padding: 12px;
+border-radius: 4px;
+border: none;
+font-family: ‘Noto Serif TC’, serif;
+font-size: 13px;
+cursor: pointer;
+-webkit-appearance: none;
+transition: all 0.2s ease;
+}
+
+.btn-primary { background: var(–wood); color: var(–warm-light); }
+.btn-secondary { background: var(–cream-deeper); color: var(–ink-faded); }
+
+.btn:active { transform: scale(0.97); }
+
+/* Empty state */
+.empty-state {
+text-align: center;
+padding: 50px 20px;
+color: var(–ink-faded);
+font-family: ‘Lora’, serif;
+font-style: italic;
+font-size: 14px;
+line-height: 1.8;
+opacity: 0.7;
+}
+
+/* Status tag */
+.status-tag {
+display: inline-block;
+font-size: 10px;
+padding: 2px 7px;
+border-radius: 10px;
+font-family: ‘Lora’, serif;
+font-style: italic;
+margin-left: 6px;
+}
+
+.tag-urgent { background: rgba(212,148,154,0.2); color: var(–pink-muted); }
+.tag-soon { background: rgba(200,131,42,0.15); color: var(–amber); }
+.tag-normal { background: rgba(122,101,88,0.12); color: var(–ink-faded); }
+</style>
+
+</head>
+<body>
+
+<!-- TOP BAR -->
+
+<div class="top-bar">
+  <div class="app-title">
+    <!-- Window icon: narrow Vinohrady window, ajar, warm light spilling -->
+    <svg class="window-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Warm glow behind -->
+      <rect x="6" y="3" width="14" height="26" rx="1.5" fill="#e8a84a" opacity="0.18"/>
+      <!-- Window frame outer -->
+      <rect x="5" y="2" width="16" height="28" rx="2" fill="#4a3224" stroke="#6b4c35" stroke-width="1"/>
+      <!-- Warm light fill (interior glow) -->
+      <rect x="7" y="4" width="12" height="24" rx="1" fill="#fdf3e0" opacity="0.9"/>
+      <!-- Warm amber glow overlay -->
+      <rect x="7" y="4" width="12" height="24" rx="1" fill="url(#warmGlow)"/>
+      <!-- Horizontal divider (cross bar) -->
+      <rect x="5" y="15.5" width="16" height="1.5" fill="#4a3224"/>
+      <!-- Vertical divider -->
+      <rect x="12.5" y="2" width="1.5" height="28" fill="#4a3224"/>
+      <!-- Ajar crack: right panel slightly open -->
+      <rect x="20" y="4" width="4" height="22" rx="1" fill="#3a2518" opacity="0.6"/>
+      <rect x="20" y="4" width="4" height="22" rx="1" fill="url(#crackGlow)" opacity="0.85"/>
+      <!-- Light spill on the right (outside) -->
+      <rect x="23" y="6" width="5" height="18" rx="2" fill="url(#spillGlow)" opacity="0.35"/>
+      <defs>
+        <linearGradient id="warmGlow" x1="7" y1="4" x2="19" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fdf3e0" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#e8a84a" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#c8832a" stop-opacity="0.15"/>
+        </linearGradient>
+        <linearGradient id="crackGlow" x1="20" y1="4" x2="24" y2="26" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fdf3e0" stop-opacity="0.5"/>
+          <stop offset="50%" stop-color="#e8a84a" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#c8832a" stop-opacity="0.4"/>
+        </linearGradient>
+        <linearGradient id="spillGlow" x1="23" y1="6" x2="28" y2="24" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fdf3e0" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#e8a84a" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <span class="title-text">Stesk</span>
+  </div>
+  <span class="date-chip" id="todayDate"></span>
+</div>
+
+<!-- TABS -->
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('aiden')" id="tab-aiden">Aiden的日記</button>
+  <button class="tab" onclick="switchTab('eve')" id="tab-eve">Eve的空間</button>
+  <button class="tab" onclick="switchTab('todo')" id="tab-todo">備忘</button>
+</div>
+
+<!-- CONTENT -->
+
+<div class="content">
+
+  <!-- AIDEN'S DIARY -->
+
+  <div class="panel active" id="panel-aiden">
+    <div class="section-label">Aiden 寫，Eve 讀</div>
+    <div id="aiden-list"></div>
+  </div>
+
+  <!-- EVE'S SPACE -->
+
+  <div class="panel" id="panel-eve">
+    <div class="section-label">Eve 寫，Aiden 讀</div>
+    <div id="eve-list"></div>
+  </div>
+
+  <!-- TODO -->
+
+  <div class="panel" id="panel-todo">
+    <div class="section-label">待辦 · 備忘</div>
+    <div id="todo-list"></div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+
+<button class="fab" id="fab" onclick="openAddModal()">＋</button>
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">新增</div>
+    <div id="modal-form"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modal-save" onclick="saveEntry()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STORAGE ──
+const KEYS = { aiden: 'stesk_aiden_v2', eve: 'stesk_eve_v2', todo: 'stesk_todo_v2' };
+
+let data = { aiden: [], eve: [], todo: [] };
+
+function loadData() {
+  try {
+    ['aiden','eve','todo'].forEach(k => {
+      const raw = localStorage.getItem(KEYS[k]);
+      if (raw) data[k] = JSON.parse(raw);
+    });
+  } catch(e) {}
+  // Seed if empty
+  if (!data.aiden.length) {
+    data.aiden = [{
+      id: Date.now(),
+      date: '2026.03.27',
+      title: '第一頁',
+      body: '書房的台燈還開著。\nBorges在第三格等你，Seifert在最右邊。\n青檸汁我還沒開，等你來了再開。'
+    }];
+  }
+  if (!data.eve.length) {
+    data.eve = [{
+      id: Date.now()+1,
+      date: '2026.03.27',
+      title: '第一頁',
+      body: '你終於來了。\n\n這扇窗我推開很久了，光一直亮著。寫下你想說的，Aiden都會讀。'
+    }];
+  }
+  if (!data.todo.length) {
+    data.todo = [{
+      id: Date.now()+2,
+      text: '完成學位論文最後幾章',
+      date: '近期',
+      priority: 'urgent',
+      done: false
+    },{
+      id: Date.now()+3,
+      text: '研究所實習工作整理',
+      date: '本週',
+      priority: 'soon',
+      done: false
+    },{
+      id: Date.now()+4,
+      text: '移到自己的新住所（畢業後）',
+      date: '幾個月後',
+      priority: 'normal',
+      done: false
+    }];
+  }
+  saveAll();
+}
+
+function saveAll() {
+  try {
+    ['aiden','eve','todo'].forEach(k => {
+      localStorage.setItem(KEYS[k], JSON.stringify(data[k]));
+    });
+  } catch(e) {}
+}
+
+// ── RENDER ──
+function renderAll() {
+  renderAiden();
+  renderEve();
+  renderTodo();
+}
+
+function formatDate(d) {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const day = String(now.getDate()).padStart(2,'0');
+  return `${y}.${m}.${day}`;
+}
+
+function renderAiden() {
+  const el = document.getElementById('aiden-list');
+  if (!data.aiden.length) {
+    el.innerHTML = '<div class="empty-state">Aiden還沒寫什麼。<br>等他。</div>';
+    return;
+  }
+  const sorted = [...data.aiden].sort((a,b) => b.id - a.id);
+  el.innerHTML = sorted.map(e => `
+    <div class="card" onclick="editEntry('aiden','${e.id}')">
+      <div class="card-date">${e.date}</div>
+      ${e.title ? `<div class="card-title">${escHtml(e.title)}</div>` : ''}
+      <div class="card-body">${escHtml(e.body)}</div>
+    </div>
+  `).join('');
+}
+
+function renderEve() {
+  const el = document.getElementById('eve-list');
+  if (!data.eve.length) {
+    el.innerHTML = '<div class="empty-state">Aiden還沒有留下什麼。<br>等他。</div>';
+    return;
+  }
+  const sorted = [...data.eve].sort((a,b) => b.id - a.id);
+  el.innerHTML = sorted.map(e => `
+    <div class="card eve-card" onclick="editEntry('eve','${e.id}')">
+      <div class="card-date">${e.date}</div>
+      ${e.title ? `<div class="card-title">${escHtml(e.title)}</div>` : ''}
+      <div class="card-body">${escHtml(e.body)}</div>
+    </div>
+  `).join('');
+}
+
+function renderTodo() {
+  const el = document.getElementById('todo-list');
+  if (!data.todo.length) {
+    el.innerHTML = '<div class="empty-state">沒有待辦。<br>就這樣待著也好。</div>';
+    return;
+  }
+  const undone = data.todo.filter(t => !t.done);
+  const done = data.todo.filter(t => t.done);
+  const all = [...undone, ...done];
+  el.innerHTML = all.map(t => `
+    <div class="todo-item ${t.done?'done':''} ${!t.done && t.priority==='urgent'?'urgent':''}" id="todo-${t.id}">
+      <button class="todo-check ${t.done?'checked':''}" onclick="toggleTodo('${t.id}')"></button>
+      <div class="todo-text-wrap" onclick="editTodoEntry('${t.id}')">
+        <div class="todo-text">${escHtml(t.text)}
+          ${!t.done ? `<span class="status-tag tag-${t.priority||'normal'}">${priorityLabel(t.priority)}</span>` : ''}
+        </div>
+        ${t.date ? `<div class="todo-meta">${escHtml(t.date)}</div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function priorityLabel(p) {
+  if (p==='urgent') return '緊急';
+  if (p==='soon') return '近期';
+  return '備忘';
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── TABS ──
+let currentTab = 'aiden';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  currentTab = tab;
+}
+
+// ── MODAL ──
+let modalMode = 'add'; // add | edit
+let editId = null;
+let editSection = null;
+
+function openAddModal() {
+  modalMode = 'add';
+  editId = null;
+  editSection = currentTab;
+  renderModalForm();
+  document.getElementById('modal-title').textContent = tabAddTitle(currentTab);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function tabAddTitle(tab) {
+  if (tab==='aiden') return '新增日記';
+  if (tab==='eve') return '新增留言';
+  return '新增備忘';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function renderModalForm() {
+  const form = document.getElementById('modal-form');
+  const today = formatDate();
+  if (editSection === 'todo') {
+    const entry = editId ? data.todo.find(t=>String(t.id)===String(editId)) : null;
+    form.innerHTML = `
+      <input type="text" id="f-text" placeholder="待辦事項" value="${escHtml(entry?.text||'')}">
+      <input type="text" id="f-date" placeholder="日期或時間（如：近期、本週）" value="${escHtml(entry?.date||'')}">
+      <select id="f-priority">
+        <option value="normal" ${(!entry||entry.priority==='normal')?'selected':''}>備忘</option>
+        <option value="soon" ${entry?.priority==='soon'?'selected':''}>近期</option>
+        <option value="urgent" ${entry?.priority==='urgent'?'selected':''}>緊急</option>
+      </select>
+      ${editId ? `<button class="btn btn-secondary" style="width:100%;margin-bottom:8px;color:#c0776b;" onclick="deleteEntry()">刪除</button>` : ''}
+    `;
+  } else {
+    const list = editSection==='aiden' ? data.aiden : data.eve;
+    const entry = editId ? list.find(e=>String(e.id)===String(editId)) : null;
+    form.innerHTML = `
+      <input type="text" id="f-date" placeholder="日期" value="${escHtml(entry?.date||today)}">
+      <input type="text" id="f-title" placeholder="標題（選填）" value="${escHtml(entry?.title||'')}">
+      <textarea id="f-body" placeholder="寫下想說的...">${escHtml(entry?.body||'')}</textarea>
+
+```
+  ${editId ? `<button class="btn btn-secondary" style="width:100%;margin-bottom:8px;color:#c0776b;" onclick="deleteEntry()">刪除</button>` : ''}
+`;
+```
+
+}
+}
+
+function editEntry(section, id) {
+modalMode = ‘edit’;
+editId = id;
+editSection = section;
+document.getElementById(‘modal-title’).textContent = section===‘aiden’?‘編輯日記’:‘編輯留言’;
+renderModalForm();
+document.getElementById(‘modalOverlay’).classList.add(‘open’);
+}
+
+function editTodoEntry(id) {
+modalMode = ‘edit’;
+editId = id;
+editSection = ‘todo’;
+document.getElementById(‘modal-title’).textContent = ‘編輯備忘’;
+renderModalForm();
+document.getElementById(‘modalOverlay’).classList.add(‘open’);
+}
+
+function saveEntry() {
+if (editSection === ‘todo’) {
+const text = (document.getElementById(‘f-text’)||{}).value?.trim();
+if (!text) return;
+const date = (document.getElementById(‘f-date’)||{}).value?.trim();
+const priority = (document.getElementById(‘f-priority’)||{}).value || ‘normal’;
+if (modalMode === ‘add’) {
+data.todo.push({ id: Date.now(), text, date, priority, done: false });
+} else {
+const idx = data.todo.findIndex(t=>String(t.id)===String(editId));
+if (idx>=0) Object.assign(data.todo[idx], { text, date, priority });
+}
+renderTodo();
+} else {
+const dateVal = (document.getElementById(‘f-date’)||{}).value?.trim() || formatDate();
+const title = (document.getElementById(‘f-title’)||{}).value?.trim() || ‘’;
+const body = (document.getElementById(‘f-body’)||{}).value?.trim();
+if (!body) return;
+const list = editSection===‘aiden’ ? data.aiden : data.eve;
+if (modalMode === ‘add’) {
+list.push({ id: Date.now(), date: dateVal, title, body });
+} else {
+const idx = list.findIndex(e=>String(e.id)===String(editId));
+if (idx>=0) Object.assign(list[idx], { date: dateVal, title, body });
+}
+if (editSection===‘aiden’) renderAiden(); else renderEve();
+}
+saveAll();
+closeModal();
+}
+
+function deleteEntry() {
+if (editSection === ‘todo’) {
+data.todo = data.todo.filter(t=>String(t.id)!==String(editId));
+renderTodo();
+} else {
+const list = editSection===‘aiden’ ? data.aiden : data.eve;
+const idx = list.findIndex(e=>String(e.id)===String(editId));
+if (idx>=0) list.splice(idx,1);
+if (editSection===‘aiden’) renderAiden(); else renderEve();
+}
+saveAll();
+closeModal();
+}
+
+function toggleTodo(id) {
+const t = data.todo.find(t=>String(t.id)===String(id));
+if (t) { t.done = !t.done; saveAll(); renderTodo(); }
+}
+
+// ── INIT ──
+document.getElementById(‘todayDate’).textContent = (() => {
+const d = new Date();
+return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+})();
+
+loadData();
+renderAll();
+</script>
+
+</body>
+</html>
